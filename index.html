@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:ital,wght@0,300..900;1,300..900&display=swap" rel="stylesheet">
+<title>Monk Mode – 30 Day Tracker</title>
+
+<style>
+/* YOUR ORIGINAL CSS — UNCHANGED */
+body {
+    margin: 0;
+    background: #0f0f0f;
+    color: #eaeaea;
+    font-family: 'Figtree', sans-serif;
+    display: flex;
+    justify-content: center;
+    overflow: hidden;
+}
+.wrapper {
+    width: 100%;
+    max-width: 1200px;
+    height: 100vh;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    margin: 0 auto;
+    position: relative;   /* important */
+}
+h1 {
+    text-align: center;
+    letter-spacing: 1.5px;
+    margin: 0;
+}
+
+.quote {
+    text-align: center;
+    opacity: 0.6;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+.stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 60px;
+    padding: 25px 40px;
+    background: linear-gradient(145deg, #161616, #111);
+    border-radius: 16px;
+    border: 1px solid #222;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    text-align: center;
+    min-width: 160px;
+}
+
+.stat-label {
+    font-size: 12px;
+    letter-spacing: 2px;
+    opacity: 0.6;
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 42px;
+    font-weight: 600;
+    background: linear-gradient(90deg, #00ff88, #00cc66);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.divider {
+    width: 1px;
+    height: 60px;
+    background: #222;
+}
+
+.table-container {
+    flex: 1;
+    overflow-y: auto;
+    border-radius: 12px;
+    background: #141414;
+    padding-right: 10px;
+}
+/* Dark Scrollbar - Webkit (Chrome, Edge, Safari) */
+
+.table-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.table-container::-webkit-scrollbar-track {
+    background: #141414;
+    border-radius: 12px;
+}
+
+.table-container::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+}
+
+.table-container::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #00cc66, #00994d);
+}
+
+
+/* Firefox Scrollbar */
+
+.table-container {
+    scrollbar-width: thin;
+    scrollbar-color: #2a2a2a #141414;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: #1f1f1f;
+    position: sticky;
+    top: 0;
+}
+
+tr {
+    border-bottom: 1px solid #222;
+}
+
+input[type="number"] {
+    width: 60px;
+    padding: 4px;
+    background: #1c1c1c;
+    border: 1px solid #333;
+    color: white;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.image-section {
+    display: none;
+    margin-top: 5px;
+}
+
+input[type="file"] {
+    font-size: 10px;
+}
+
+img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-top: 4px;
+}
+
+.progress-container {
+    width: 100%;
+    height: 8px;
+    background: #222;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    transition: 0.3s ease;
+}
+
+/* GitHub Style Heatmap */
+.heatmap {
+    margin-top: 20px;
+    padding: 15px;
+    background: #181818;
+    border-radius: 12px;
+}
+
+.heatmap-grid {
+    display: grid;
+    grid-template-columns: repeat(15, 1fr);
+    gap: 6px;
+}
+.day-box {
+    height:40px;
+    border-radius: 4px;
+    background: #222;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #777;
+    transition: 0.3s ease;
+}
+
+.level-0 { background: #222; }
+.level-1 { background: #3d1f1f; }
+.level-2 { 
+    background: #5f2f2f; 
+    color: #aaa;
+}
+.level-3 { 
+    background: #00cc66; 
+    color: #000;
+    font-weight: 600;
+}
+
+/* ADDITIONAL NAV BUTTON STYLE */
+.top-nav {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+}
+
+button {
+    padding: 8px 16px;
+    background: linear-gradient(90deg,#00cc66,#00994d);
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+/* MOSAIC PAGE */
+
+#mosaicPage {
+    position: absolute;
+    inset: 0;
+    background: #0f0f0f;
+    padding: 30px;
+    box-sizing: border-box;
+
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+#mosaicPage canvas {
+    background: #111;
+    border-radius: 12px;
+    display: block;
+    margin: 30px auto;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- TRACKER PAGE -->
+<div class="wrapper" id="trackerPage">
+
+<div class="top-nav">
+    <button onclick="showMosaic()">View Mosaic</button>
+</div>
+
+<!-- YOUR EXISTING CONTENT REMAINS EXACTLY SAME BELOW -->
+<h1>Path to Financial Freedom</h1>
+<div class="quote">No zero days. No negotiations.</div>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-label">STREAK</div>
+        <div class="stat-value" id="perfectDays">0</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stat-card">
+        <div class="stat-label">COMPLETION</div>
+        <div class="stat-value" id="completionRate">0%</div>
+    </div>
+</div>
+
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>Day</th>
+<th>Coding</th>
+<th>Article</th>
+<th>Accounting</th>
+<th>Progress</th>
+</tr>
+</thead>
+<tbody id="trackerBody"></tbody>
+</table>
+</div>
+
+<div class="heatmap">
+    <div style="margin-bottom:10px;">Streak Map</div>
+    <div class="heatmap-grid" id="heatmapGrid"></div>
+</div>
+
+</div>
+
+<!-- MOSAIC PAGE -->
+<div id="mosaicPage">
+    <div class="top-nav">
+        <button onclick="showTracker()">Back to Tracker</button>
+    </div>
+
+    <h1 style="text-align:center;">30 Day Mosaic</h1>
+    <canvas id="portraitCanvas"></canvas>
+</div>
+
+<!-- <script>
+
+/* ===== YOUR ORIGINAL JS — UNCHANGED ===== */
+
+const benchmark = { coding: 4, article: 1, accounting: 2 };
+const trackerBody = document.getElementById("trackerBody");
+const heatmapGrid = document.getElementById("heatmapGrid");
+
+let uploadedImages = new Array(30).fill(null).map(() => ({
+    coding: null,
+    article: null,
+    accounting: null
+}));
+
+for (let i = 1; i <= 30; i++) {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${i}</td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+                <img />
+            </div>
+        </td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+                <img />
+            </div>
+        </td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+                <img />
+            </div>
+        </td>
+        <td>
+            <div class="progress-container">
+                <div class="progress-fill"></div>
+            </div>
+        </td>
+    `;
+    trackerBody.appendChild(row);
+
+    const box = document.createElement("div");
+    box.classList.add("day-box", "level-0");
+    box.textContent = i;
+    heatmapGrid.appendChild(box);
+}
+
+function updateStats() {
+    const rows = document.querySelectorAll("tbody tr");
+    const boxes = document.querySelectorAll(".day-box");
+    let perfect = 0;
+
+    rows.forEach((row, index) => {
+        const inputs = row.querySelectorAll(".hours-input");
+        const coding = Number(inputs[0].value);
+        const article = Number(inputs[1].value);
+        const accounting = Number(inputs[2].value);
+
+        const score =
+            (coding >= benchmark.coding ? 1 : 0) +
+            (article >= benchmark.article ? 1 : 0) +
+            (accounting >= benchmark.accounting ? 1 : 0);
+
+        const progressFill = row.querySelector(".progress-fill");
+        progressFill.style.width = (score / 3) * 100 + "%";
+
+        if (score === 3) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #00ff88, #00cc66)";
+            perfect++;
+            boxes[index].className = "day-box level-3";
+        } else if (score === 2) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #ff6666, #990000)";
+            boxes[index].className = "day-box level-2";
+        } else if (score === 1) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #ff4d4d, #660000)";
+            boxes[index].className = "day-box level-1";
+        } else {
+            progressFill.style.background =
+                "linear-gradient(90deg, #333, #222)";
+            boxes[index].className = "day-box level-0";
+        }
+    });
+
+    document.getElementById("perfectDays").innerText = perfect;
+    document.getElementById("completionRate").innerText =
+        Math.round((perfect / 30) * 100) + "%";
+}
+
+// document.addEventListener("input", function(e) {
+//     if (e.target.classList.contains("hours-input")) {
+//         const imageSection = e.target.parentElement.querySelector(".image-section");
+//         imageSection.style.display = e.target.value ? "block" : "none";
+//         updateStats();
+//     }
+// });
+
+document.addEventListener("input", function(e) {
+    if (e.target.classList.contains("hours-input")) {
+
+        const input = e.target;
+        const imageSection = input.parentElement.querySelector(".image-section");
+        const row = input.closest("tr");
+        const dayIndex = Array.from(trackerBody.children).indexOf(row);
+
+        const cellIndex = Array.from(row.children).indexOf(
+            input.closest("td")
+        );
+
+        let type;
+        if (cellIndex === 1) type = "coding";
+        if (cellIndex === 2) type = "article";
+        if (cellIndex === 3) type = "accounting";
+
+        // If number entered AND no image uploaded → show input
+        if (input.value && !uploadedImages[dayIndex][type]) {
+            imageSection.style.display = "block";
+        }
+
+        // If number cleared → reset image + show input again
+        if (!input.value) {
+            uploadedImages[dayIndex][type] = null;
+            imageSection.style.display = "block";
+            renderMosaic();
+        }
+
+        updateStats();
+    }
+});
+
+// document.addEventListener("change", function(e) {
+//     if (e.target.type === "file") {
+
+//         const row = e.target.closest("tr");
+//         const dayIndex = Array.from(trackerBody.children).indexOf(row);
+
+//         const cellIndex = Array.from(row.children).indexOf(
+//             e.target.closest("td")
+//         );
+
+//         let type;
+//         if (cellIndex === 1) type = "coding";
+//         if (cellIndex === 2) type = "article";
+//         if (cellIndex === 3) type = "accounting";
+
+//         const file = e.target.files[0];
+
+//         if (file) {
+//             const reader = new FileReader();
+//             reader.onload = function(event) {
+//                 uploadedImages[dayIndex][type] = event.target.result;
+//                 renderMosaic();
+//             };
+//             reader.readAsDataURL(file);
+//         }
+//     }
+// });
+
+document.addEventListener("change", function(e) {
+    if (e.target.type === "file") {
+
+        const fileInput = e.target;
+        const imageSection = fileInput.closest(".image-section");
+        const row = fileInput.closest("tr");
+        const dayIndex = Array.from(trackerBody.children).indexOf(row);
+
+        const cellIndex = Array.from(row.children).indexOf(
+            fileInput.closest("td")
+        );
+
+        let type;
+        if (cellIndex === 1) type = "coding";
+        if (cellIndex === 2) type = "article";
+        if (cellIndex === 3) type = "accounting";
+
+        const file = fileInput.files[0];
+
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                uploadedImages[dayIndex][type] = event.target.result;
+                renderMosaic();
+            };
+            reader.readAsDataURL(file);
+
+            // ✅ Hide image input after upload
+            imageSection.style.display = "none";
+        }
+    }
+});
+
+/* ===== ADDED MOSAIC LOGIC ===== */
+
+const canvas = document.getElementById("portraitCanvas");
+const ctx = canvas.getContext("2d");
+
+const columns = 9;  // 90 tiles
+const rows = 10;
+
+function resizeCanvas() {
+
+    const availableHeight = window.innerHeight - 150; 
+    // subtract space for heading + padding
+
+    const tileSize = Math.floor(availableHeight / rows);
+
+    canvas.width = columns * tileSize;
+    canvas.height = rows * tileSize;
+
+    renderMosaic(tileSize);
+}
+
+function renderMosaic(tileSize = 80) {
+
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let flatImages = [];
+
+    uploadedImages.forEach(day => {
+        flatImages.push(day.coding);
+        flatImages.push(day.article);
+        flatImages.push(day.accounting);
+    });
+
+    flatImages.forEach((imgData, index) => {
+
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+
+        const x = col * tileSize;
+        const y = row * tileSize;
+
+        if (imgData) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, x, y, tileSize, tileSize);
+            };
+            img.src = imgData;
+        } else {
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(x, y, tileSize, tileSize);
+        }
+    });
+}
+
+/* PAGE SWITCH */
+
+const mosaicPage = document.getElementById("mosaicPage");
+
+function showMosaic() {
+    mosaicPage.style.opacity = "1";
+    mosaicPage.style.pointerEvents = "auto";
+    resizeCanvas();
+}
+
+function showTracker() {
+    mosaicPage.style.opacity = "0";
+    mosaicPage.style.pointerEvents = "none";
+}
+
+
+window.addEventListener("resize", function() {
+    if (document.getElementById("mosaicPage").style.display === "block") {
+        resizeCanvas();
+    }
+});
+
+</script> -->
+
+<script>
+const challengeStartDate = new Date("2026-02-27");
+
+function getTodayIndex() {
+    const today = new Date();
+
+    const diffTime = today - challengeStartDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+    return diffDays; // 0-based index
+}
+
+function applyRowLocks() {
+
+    const todayIndex = getTodayIndex();
+    const rows = document.querySelectorAll("#trackerBody tr");
+
+    rows.forEach((row, index) => {
+
+        const inputs = row.querySelectorAll("input");
+
+        if (index < todayIndex) {
+            // 🔒 Past days → readonly
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.style.opacity = 0.5;
+            });
+        }
+
+        else if (index === todayIndex) {
+            // ✅ Today → editable
+            inputs.forEach(input => {
+                input.disabled = false;
+                input.style.opacity = 1;
+            });
+        }
+
+        else {
+            // 🚫 Future days → fully disabled
+            inputs.forEach(input => {
+                input.disabled = true;
+                input.style.opacity = 0.2;
+            });
+        }
+    });
+}
+
+const benchmark = { coding: 4, article: 1, accounting: 2 };
+const trackerBody = document.getElementById("trackerBody");
+const heatmapGrid = document.getElementById("heatmapGrid");
+
+let uploadedImages = new Array(30).fill(null).map(() => ({
+    coding: null,
+    article: null,
+    accounting: null,
+    hours: {
+        coding: 0,
+        article: 0,
+        accounting: 0
+    }
+}));
+
+/* ============================
+   LOAD DATA FROM SERVER
+============================ */
+
+async function loadData() {
+    const res = await fetch("/load-data");
+    const data = await res.json();
+
+    if (!data) return;
+
+    uploadedImages = data;
+
+    document.querySelectorAll("tbody tr").forEach((row, i) => {
+        const inputs = row.querySelectorAll(".hours-input");
+
+        inputs[0].value = uploadedImages[i].hours.coding || "";
+        inputs[1].value = uploadedImages[i].hours.article || "";
+        inputs[2].value = uploadedImages[i].hours.accounting || "";
+
+        updateStats();
+    });
+
+    renderMosaic();
+}
+
+/* ============================
+   SAVE DATA TO SERVER
+============================ */
+
+async function saveData() {
+    await fetch("/save-data", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(uploadedImages)
+    });
+}
+
+/* ============================
+   BUILD TABLE
+============================ */
+
+for (let i = 1; i <= 30; i++) {
+    const row = document.createElement("tr");
+
+    row.innerHTML = `
+        <td>${i}</td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+            </div>
+        </td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+            </div>
+        </td>
+        <td>
+            <input type="number" min="0" class="hours-input"/>
+            <div class="image-section">
+                <input type="file" accept="image/*" />
+            </div>
+        </td>
+        <td>
+            <div class="progress-container">
+                <div class="progress-fill"></div>
+            </div>
+        </td>
+    `;
+    trackerBody.appendChild(row);
+
+    const box = document.createElement("div");
+    box.classList.add("day-box", "level-0");
+    box.textContent = i;
+    heatmapGrid.appendChild(box);
+}
+applyRowLocks();
+/* ============================
+   HOURS INPUT
+============================ */
+
+document.addEventListener("input", function(e) {
+    if (!e.target.classList.contains("hours-input")) return;
+
+    const input = e.target;
+    const row = input.closest("tr");
+    const dayIndex = Array.from(trackerBody.children).indexOf(row);
+    const cellIndex = Array.from(row.children).indexOf(input.closest("td"));
+
+    let type;
+    if (cellIndex === 1) type = "coding";
+    if (cellIndex === 2) type = "article";
+    if (cellIndex === 3) type = "accounting";
+
+    uploadedImages[dayIndex].hours[type] = Number(input.value) || 0;
+
+    const imageSection = input.parentElement.querySelector(".image-section");
+    imageSection.style.display = input.value ? "block" : "none";
+
+    updateStats();
+    saveData();
+});
+
+/* ============================
+   IMAGE UPLOAD TO SERVER
+============================ */
+
+document.addEventListener("change", async function(e) {
+    if (e.target.type !== "file") return;
+
+    const fileInput = e.target;
+    const row = fileInput.closest("tr");
+    const dayIndex = Array.from(trackerBody.children).indexOf(row);
+    const cellIndex = Array.from(row.children).indexOf(fileInput.closest("td"));
+
+    let type;
+    if (cellIndex === 1) type = "coding";
+    if (cellIndex === 2) type = "article";
+    if (cellIndex === 3) type = "accounting";
+
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append(type, file);
+
+const res = await fetch("/upload", {
+    method: "POST",
+    body: formData
+});
+
+    const data = await res.json();
+
+    uploadedImages[dayIndex][type] = "/uploads/" + data.filename;
+
+    fileInput.closest(".image-section").style.display = "none";
+
+    renderMosaic();
+    saveData();
+});
+
+/* ============================
+   UPDATE STATS
+============================ */
+
+// function updateStats() {
+//     const rows = document.querySelectorAll("tbody tr");
+//     const boxes = document.querySelectorAll(".day-box");
+//     let perfect = 0;
+
+//     rows.forEach((row, index) => {
+
+//         const coding = uploadedImages[index].hours.coding;
+//         const article = uploadedImages[index].hours.article;
+//         const accounting = uploadedImages[index].hours.accounting;
+
+//         const score =
+//             (coding >= benchmark.coding ? 1 : 0) +
+//             (article >= benchmark.article ? 1 : 0) +
+//             (accounting >= benchmark.accounting ? 1 : 0);
+
+//         const progressFill = row.querySelector(".progress-fill");
+//         progressFill.style.width = (score / 3) * 100 + "%";
+
+//         if (score === 3) {
+//             progressFill.style.background =
+//                 "linear-gradient(90deg, #00ff88, #00cc66)";
+//             perfect++;
+//             boxes[index].className = "day-box level-3";
+//         } else if (score === 2) {
+//             boxes[index].className = "day-box level-2";
+//         } else if (score === 1) {
+//             boxes[index].className = "day-box level-1";
+//         } else {
+//             boxes[index].className = "day-box level-0";
+//         }
+//     });
+
+//     document.getElementById("perfectDays").innerText = perfect;
+//     document.getElementById("completionRate").innerText =
+//         Math.round((perfect / 30) * 100) + "%";
+// }
+
+function updateStats() {
+    const rows = document.querySelectorAll("tbody tr");
+    const boxes = document.querySelectorAll(".day-box");
+
+    let perfect = 0;
+
+    uploadedImages.forEach((day, index) => {
+
+        const coding = day.hours.coding || 0;
+        const article = day.hours.article || 0;
+        const accounting = day.hours.accounting || 0;
+
+        const score =
+            (coding >= benchmark.coding ? 1 : 0) +
+            (article >= benchmark.article ? 1 : 0) +
+            (accounting >= benchmark.accounting ? 1 : 0);
+
+        const row = rows[index];
+        const progressFill = row.querySelector(".progress-fill");
+
+        progressFill.style.width = (score / 3) * 100 + "%";
+
+        if (score === 3) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #00ff88, #00cc66)";
+            boxes[index].className = "day-box level-3";
+            perfect++;
+        } else if (score === 2) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #ff6666, #990000)";
+            boxes[index].className = "day-box level-2";
+        } else if (score === 1) {
+            progressFill.style.background =
+                "linear-gradient(90deg, #ff4d4d, #660000)";
+            boxes[index].className = "day-box level-1";
+        } else {
+            progressFill.style.background =
+                "linear-gradient(90deg, #333, #222)";
+            boxes[index].className = "day-box level-0";
+        }
+    });
+
+    document.getElementById("perfectDays").innerText = perfect;
+    document.getElementById("completionRate").innerText =
+        Math.round((perfect / 30) * 100) + "%";
+}
+/* ============================
+   MOSAIC
+============================ */
+
+const canvas = document.getElementById("portraitCanvas");
+const ctx = canvas.getContext("2d");
+const columns = 9;
+const rows = 10;
+
+function resizeCanvas() {
+    const tileSize = Math.floor((window.innerHeight - 150) / rows);
+    canvas.width = columns * tileSize;
+    canvas.height = rows * tileSize;
+    renderMosaic(tileSize);
+}
+
+function renderMosaic(tileSize = 80) {
+
+    ctx.fillStyle = "#111";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    let flatImages = [];
+
+    uploadedImages.forEach(day => {
+        flatImages.push(day.coding);
+        flatImages.push(day.article);
+        flatImages.push(day.accounting);
+    });
+
+    flatImages.forEach((imgPath, index) => {
+
+        const col = index % columns;
+        const row = Math.floor(index / columns);
+        const x = col * tileSize;
+        const y = row * tileSize;
+
+        if (imgPath) {
+            const img = new Image();
+            img.onload = function() {
+                ctx.drawImage(img, x, y, tileSize, tileSize);
+            };
+            img.src = imgPath;
+        } else {
+            ctx.fillStyle = "#1a1a1a";
+            ctx.fillRect(x, y, tileSize, tileSize);
+        }
+    });
+}
+
+/* ============================
+   PAGE SWITCH
+============================ */
+
+const mosaicPage = document.getElementById("mosaicPage");
+
+function showMosaic() {
+    mosaicPage.style.opacity = "1";
+    mosaicPage.style.pointerEvents = "auto";
+    resizeCanvas();
+}
+
+function showTracker() {
+    mosaicPage.style.opacity = "0";
+    mosaicPage.style.pointerEvents = "none";
+}
+
+window.addEventListener("resize", resizeCanvas);
+
+/* ============================
+   INIT
+============================ */
+
+loadData();
+updateStats();
+renderMosaic();
+
+</script>
+</body>
+</html>
